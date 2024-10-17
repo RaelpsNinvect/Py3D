@@ -2,31 +2,109 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D to 3D Image Converter</title>
-    <script>
-        let clickCount = 0;
-
-        function handleClick() {
-            clickCount++;
-
-            if (clickCount >= 4) {
-                const button = document.getElementById('upload-button');
-                button.disabled = true; // Disable the button
-                button.style.backgroundColor = '#ccc'; // Change button color to indicate it's disabled
-                button.style.cursor = 'not-allowed'; // Change cursor to indicate no action
-                document.getElementById('message').textContent = 'You have exceeded the maximum number of attempts.';
-            }
-        }
-    </script>
+    <title>3D Model Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #canvas-container { width: 100%; height: 500px; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
-    <h1>Upload an Image to Convert to 3D Model</h1>
-    <form action="{% url 'upload_image' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" id="upload-button" onclick="handleClick()">Upload</button>
+    <h1>3D Model Viewer</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="image" name="image" accept="image/*">
+        <button type="submit">Upload Image</button>
     </form>
-    <div id="message"></div>
+    <div id="canvas-container"></div>
+    <button id="download-button" style="display: none;">Download OBJ</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script>
+        const form = document.getElementById('upload-form');
+        const downloadButton = document.getElementById('download-button');
+        const canvasContainer = document.getElementById('canvas-container');
+        let objUrl = '';
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const csrftoken = getCookie('csrftoken');
+
+            try {
+                const response = await fetch('/upload/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.obj_url) {
+                    objUrl = data.obj_url;
+                    displayModel(objUrl);
+                    downloadButton.style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        });
+
+        function displayModel(url) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / 500, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(canvasContainer.clientWidth, 500);
+            canvasContainer.innerHTML = ''; // Clear any previous content
+            canvasContainer.appendChild(renderer.domElement);
+
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(0, 1, 1).normalize();
+            scene.add(light);
+
+            const loader = new THREE.OBJLoader();
+            loader.load(url, (object) => {
+                object.position.set(0, 0, 0);
+                object.scale.set(0.1, 0.1, 0.1); // Adjust scale if needed
+                scene.add(object);
+
+                camera.position.z = 5;
+                animate();
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    object.rotation.y += 0.01; // Rotate the model for better visibility
+                    renderer.render(scene, camera);
+                }
+            }, undefined, (error) => {
+                console.error('An error happened while loading the OBJ file:', error);
+            });
+        }
+
+        downloadButton.addEventListener('click', () => {
+            if (objUrl) {
+                window.location.href = objUrl;
+            }
+        });
+    </script>
 </body>
 </html>
