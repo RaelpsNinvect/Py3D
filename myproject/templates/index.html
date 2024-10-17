@@ -4,13 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D to 3D Image Converter</title>
+    <script>
+        let clickCount = 0;
+
+        function handleClick() {
+            clickCount++;
+
+            if (clickCount >= 4) {
+                const button = document.getElementById('upload-button');
+                button.disabled = true; // Disable the button
+                button.style.backgroundColor = '#ccc'; // Change button color to indicate it's disabled
+                button.style.cursor = 'not-allowed'; // Change cursor to indicate no action
+                document.getElementById('message').textContent = 'You have exceeded the maximum number of attempts.';
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Upload an Image to Convert to 3D Model</h1>
     <form action="{% url 'upload_image' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Upload</button>
+        <button type="submit" id="upload-button" onclick="handleClick()">Upload</button>
     </form>
+    <div id="message"></div>
 </body>
 </html>
