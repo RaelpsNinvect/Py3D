@@ -11,7 +11,8 @@
 </head>
 <body>
     <h1>3D Model Viewer</h1>
-    <form id="upload-form" enctype="multipart/form-data">
+    <form id="upload-form" method="'POST" enctype="multipart/form-data">
+        {% csrf_token %}
         <input type="file" id="image" name="image" accept="image/*">
         <button type="submit">Upload Image</button>
     </form>
