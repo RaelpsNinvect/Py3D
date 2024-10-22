@@ -3,29 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <title>3D Model Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; }
-        #canvas-container { width: 100%; height: 500px; }
-        canvas { display: block; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        nav {
+            background-color: #30363d;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+        }
+        nav h1 {
+            color: white;
+            margin: 20px 40px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 20px;
+            margin-right: 20px;
+            display: flex;
+            float: right;
+        }
+        nav ul li {
+            margin-left: 20px;
+            position: relative;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: large;
+            padding: 10px 15px;
+            transition: background-color 0.3s, border 0.3s;
+        }
+        nav ul li:hover a {
+            background-color: #606f80;
+            border-radius: 5px;
+        }
+        #gui-adjusts {
+            display: flex;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px rounded #ccc;
+            background-color: white;
+            margin: 0 20px;
+            height: 420px;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        #container {
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 100vw;
+            margin: 20px 0;
+        }
+        #canvas-container {
+            width: 50%;
+            height: 420px;
+            border: 1px rounded #ccc;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .controls {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+        }
+        form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+        }
+        form input[type="file"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 700;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #357ab8;
+        }
+        #download-button {
+            margin: 10px auto;
+            display: none;
+        }
+        #grid-container {
+            width: 30%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px rounded #ccc;
+            box-shadow: 0 2px 10 px rgba(0, 0, 0, 0.1);
+            height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+        }
+        .grid-item {
+            background-color: #eaeaea;
+            border: 1px rounded #ccc;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <h1>3D Model Viewer</h1>
-    <form id="upload-form" method="'POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" id="image" name="image" accept="image/*">
-        <button type="submit">Upload Image</button>
-    </form>
-    <div id="canvas-container"></div>
-    <button id="download-button" style="display: none;">Download OBJ</button>
+    <nav>
+        <h1>3D Model Viewer</h1>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about-us">About Us</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <div id="container">
+        <div id="gui-adjusts">
+            <h2>Controls here</h2>
+        </div>
+        <div id="canvas-container">
+            <!-- Canvas will be inserted here by JavaScript -->
+        </div>
+        <div id="grid-container">
+            <!-- Sample grid items -->
+            <div class="grid-item">Grid 1</div>
+            <div class="grid-item">Grid 2</div>
+            <div class="grid-item">Grid 3</div>
+            <div class="grid-item">Grid 4</div>
+            <div class="grid-item">Grid 5</div>
+            <div class="grid-item">Grid 6</div>
+            <div class="grid-item">Grid 7</div>
+            <div class="grid-item">Grid 8</div>
+            <div class="grid-item">Grid 9</div>
+        </div>
+    </div>
+    <div class="controls">
+        <form id="upload-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="image" name="image" accept="image/*">
+            <button type="submit">Upload Image</button>
+        </form>
+        <button id="download-button">Download OBJ</button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+
     <script>
         const form = document.getElementById('upload-form');
         const downloadButton = document.getElementById('download-button');
         const canvasContainer = document.getElementById('canvas-container');
         let objUrl = '';
+        let scene, camera, renderer, object;
+        let gui, meshControls;
 
         function getCookie(name) {
             let cookieValue = null;
@@ -71,39 +248,85 @@
         });
 
         function displayModel(url) {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / 500, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(canvasContainer.clientWidth, 500);
-            canvasContainer.innerHTML = ''; // Clear any previous content
-            canvasContainer.appendChild(renderer.domElement);
+            if (!scene) {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / 400, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer({ alpha: true });
+                renderer.setSize(canvasContainer.clientWidth, 400);
+                canvasContainer.innerHTML = '';
+                canvasContainer.appendChild(renderer.domElement);
 
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(0, 1, 1).normalize();
-            scene.add(light);
+                const light = new THREE.DirectionalLight(0xffffff, 1);
+                light.position.set(0, 1, 1).normalize();
+                scene.add(light);
+
+                gui = new dat.GUI();
+                meshControls = {
+                    positionX: 0,
+                    positionY: 0,
+                    positionZ: 0,
+                    rotationX: 0,
+                    rotationY: 0,
+                    rotationZ: 0,
+                    scale: 1
+                };
+
+                gui.add(meshControls, 'positionX', -5, 5).onChange(() => updateMesh());
+                gui.add(meshControls, 'positionY', -5, 5).onChange(() => updateMesh());
+                gui.add(meshControls, 'positionZ', -5, 5).onChange(() => updateMesh());
+                gui.add(meshControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateMesh());
+                gui.add(meshControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateMesh());
+                gui.add(meshControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateMesh());
+                gui.add(meshControls, 'scale', 0.1, 5).onChange(() => updateMesh());
+            }
 
             const loader = new THREE.OBJLoader();
-            loader.load(url, (object) => {
-                object.position.set(0, 0, 0);
-                object.scale.set(0.1, 0.1, 0.1); // Adjust scale if needed
+            loader.load(url, (loadedObject) => {
+                if (object) {
+                    scene.remove(object);
+                }
+                object = loadedObject;
+                object.position.set(meshControls.positionX, meshControls.positionY, meshControls.positionZ);
+                object.rotation.set(meshControls.rotationX, meshControls.rotationY, meshControls.rotationZ);
+                object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
                 scene.add(object);
 
-                camera.position.z = 5;
+                camera.position.z = 2;
+                adjustCameraForObject(object);
                 animate();
-
-                function animate() {
-                    requestAnimationFrame(animate);
-                    object.rotation.y += 0.01; // Rotate the model for better visibility
-                    renderer.render(scene, camera);
-                }
             }, undefined, (error) => {
                 console.error('An error happened while loading the OBJ file:', error);
             });
         }
 
+        function updateMesh() {
+            if (object) {
+                object.position.set(meshControls.positionX, meshControls.positionY, meshControls.positionZ);
+                object.rotation.set(meshControls.rotationX, meshControls.rotationY, meshControls.rotationZ);
+                object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
+            }
+        }
+
+        function adjustCameraForObject(obj) {
+            const box = new THREE.Box3().setFromObject(obj);
+            const size = box.getSize(new THREE.Vector3()).length();
+            const center = box.getCenter(new THREE.Vector3());
+
+            camera.position.z = size * 1.5;
+            camera.lookAt(center);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
         downloadButton.addEventListener('click', () => {
             if (objUrl) {
-                window.location.href = objUrl;
+                const link = document.createElement('a');
+                link.href = objUrl;
+                link.download = 'model.obj';
+                link.click();
             }
         });
     </script>
