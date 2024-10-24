@@ -12,7 +12,7 @@ from django.conf import settings
 # Load the MiDaS model
 def load_midas_model():
     print("Loading MiDaS model...")
-    model = torch.hub.load("isl-org/MiDaS", "MiDaS_small")  # Using a specific version
+    model = torch.hub.load("isl-org/MiDaS", "DPT_Large")  # Using a specific version
     model.eval()
     return model
 

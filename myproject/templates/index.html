@@ -49,15 +49,21 @@
             background-color: #606f80;
             border-radius: 5px;
         }
+        .section-one {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 10%;
+        }
         #gui-adjusts {
             display: flex;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border: 1px rounded #ccc;
             background-color: white;
             margin: 0 20px;
-            height: 420px;
+            height: flex;
             border-radius: 10px;
-            padding: 10px;
+            padding: 20px 0;
         }
         #container {
             display: flex;
@@ -91,8 +97,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 600px;
+            width: 80%;
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -164,13 +169,22 @@
         </ul>
     </nav>
     <div id="container">
-        <div id="gui-adjusts">
-            <h2>Controls here</h2>
-        </div>
-        <div id="canvas-container">
+        <section id="section-one">
+            <div class="controls">
+                <form id="upload-form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <button type="submit">Upload Image</button>
+                </form>
+            </div>
+            <div id="gui-adjusts"></div>
+            <button id="download-button">Download OBJ</button>
+        </section>
+        
+        <section id="canvas-container">
             <!-- Canvas will be inserted here by JavaScript -->
-        </div>
-        <div id="grid-container">
+        </section>
+        <section id="grid-container">
             <!-- Sample grid items -->
             <div class="grid-item">Grid 1</div>
             <div class="grid-item">Grid 2</div>
@@ -181,16 +195,9 @@
             <div class="grid-item">Grid 7</div>
             <div class="grid-item">Grid 8</div>
             <div class="grid-item">Grid 9</div>
-        </div>
+        </s>
     </div>
-    <div class="controls">
-        <form id="upload-form" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" id="image" name="image" accept="image/*">
-            <button type="submit">Upload Image</button>
-        </form>
-        <button id="download-button">Download OBJ</button>
-    </div>
+  
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
@@ -261,6 +268,15 @@
                 scene.add(light);
 
                 gui = new dat.GUI();
+                gui.domElement.className += ' custom-class';
+                gui.domElement.style.margin = '10px';
+                gui.domElement.style.width = '200px';
+                gui.domElement.style.height = '100%';
+                gui.domElement.style.fontFamily = 'Arial, sans-serif';
+                gui.domElement.style.fontSize = '14px';
+                gui.domElement.style.color = '#000000'; // changed to black
+                gui.domElement.style.backgroundColor = 'transparent'; // changed to transparent
+                document.getElementById('gui-adjusts').appendChild(gui.domElement);
                 meshControls = {
                     positionX: 0,
                     positionY: 0,
@@ -315,6 +331,7 @@
             camera.position.z = size * 1.5;
             camera.lookAt(center);
         }
+
 
         function animate() {
             requestAnimationFrame(animate);
