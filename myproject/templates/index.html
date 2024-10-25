@@ -210,6 +210,33 @@
         let scene, camera, renderer, object;
         let gui, meshControls;
 
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+
+        // Function to handle mouse click
+        function onMouseClick(event) {
+            // Convert mouse click position to normalized device coordinates
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Update the raycaster with the camera and mouse position
+            raycaster.setFromCamera(mouse, camera);
+
+            // Calculate objects intersecting the ray
+            const intersects = raycaster.intersectObjects(scene.children);
+
+            if (intersects.length > 0) {
+                // The first object intersected by the ray
+                const intersectedObject = intersects[0].object;
+                alert('You clicked on: ' + intersectedObject.userData.name);
+                // You can also change the material or perform other actions here
+                intersectedObject.material.color.set(0xff0000); // Change color to red on click
+            }
+        }
+
+        // Add event listener for mouse clicks
+        window.addEventListener('click', onMouseClick, false);
+
         function addShape(type) {
             let geometry;
             switch(type) {
@@ -236,6 +263,7 @@
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(Math.random() * 3 - 1.5, Math.random() * 3 - 1.5, Math.random() * 3 - 1.5);
             scene.add(mesh);
+            mesh.userData = { name: type };
         }
 
         function getCookie(name) {
@@ -444,6 +472,7 @@
         document.querySelectorAll('.grid-item').forEach(item => {
             item.addEventListener('click', handleGridItemClick);
         });
+        
     </script>
 </body>
 </html>
