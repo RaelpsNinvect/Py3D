@@ -42,7 +42,7 @@ def create_3d_model(depth_map):
     print("Creating 3D model...")
     h, w = depth_map.shape
     x, y = np.meshgrid(np.linspace(0, w - 1, w), np.linspace(0, h - 1, h))
-    z = depth_map * 300  # Scale to a suitable range
+    z = depth_map * 400  # Scale to a suitable range
 
     vertices = np.column_stack((
         x.flatten(),

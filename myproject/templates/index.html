@@ -49,11 +49,11 @@
             background-color: #606f80;
             border-radius: 5px;
         }
-        .section-one {
+        #section-one {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 10%;
+            width: 20%;
         }
         #gui-adjusts {
             display: flex;
@@ -99,7 +99,7 @@
             justify-content: center;
             width: 80%;
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin: 10px auto;
@@ -186,15 +186,12 @@
         </section>
         <section id="grid-container">
             <!-- Sample grid items -->
-            <div class="grid-item">Grid 1</div>
-            <div class="grid-item">Grid 2</div>
-            <div class="grid-item">Grid 3</div>
-            <div class="grid-item">Grid 4</div>
-            <div class="grid-item">Grid 5</div>
-            <div class="grid-item">Grid 6</div>
-            <div class="grid-item">Grid 7</div>
-            <div class="grid-item">Grid 8</div>
-            <div class="grid-item">Grid 9</div>
+            <div class="grid-item" data-id="1">Cube</div>
+            <div class="grid-item" data-id="2">Sphere</div>
+            <div class="grid-item" data-id="3">Cone</div>
+            <div class="grid-item" data-id="4">Cylinder</div>
+            <div class="grid-item" data-id="5">Torus</div>
+            <div class="grid-item" data-id="6">Pyramid</div>
         </s>
     </div>
   
@@ -202,7 +199,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/OBJExporter.js"></script>
+    
     <script>
         const form = document.getElementById('upload-form');
         const downloadButton = document.getElementById('download-button');
@@ -210,6 +209,34 @@
         let objUrl = '';
         let scene, camera, renderer, object;
         let gui, meshControls;
+
+        function addShape(type) {
+            let geometry;
+            switch(type) {
+                case 'cube':
+                    geometry = new THREE.BoxGeometry(1, 1, 1);
+                    break;
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(0.5, 32, 32);
+                    break;
+                case 'cone':
+                    geometry = new THREE.ConeGeometry(0.5, 1, 32);
+                    break;
+                case 'cylinder':
+                    geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
+                    break;
+                case 'torus':
+                    geometry = new THREE.TorusGeometry(0.4, 0.15, 16, 100);
+                    break;
+                case 'pyramid':
+                    geometry = new THREE.ConeGeometry(0.5, 1, 4);
+                    break;
+            }
+            const material = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(Math.random() * 3 - 1.5, Math.random() * 3 - 1.5, Math.random() * 3 - 1.5);
+            scene.add(mesh);
+        }
 
         function getCookie(name) {
             let cookieValue = null;
@@ -259,9 +286,20 @@
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / 400, 0.1, 1000);
                 renderer = new THREE.WebGLRenderer({ alpha: true });
-                renderer.setSize(canvasContainer.clientWidth, 400);
+                renderer.setSize(canvasContainer.clientWidth, 420);
+                window.addEventListener('resize', () => {
+                    camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+                });
                 canvasContainer.innerHTML = '';
                 canvasContainer.appendChild(renderer.domElement);
+
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true; // Smooth motion
+                controls.dampingFactor = 0.25;
+                controls.minDistance = 1;
+                controls.maxDistance = 1000;
 
                 const light = new THREE.DirectionalLight(0xffffff, 1);
                 light.position.set(0, 1, 1).normalize();
@@ -284,7 +322,8 @@
                     rotationX: 0,
                     rotationY: 0,
                     rotationZ: 0,
-                    scale: 1
+                    scale: 0.03,
+                    color: '#ffffff'
                 };
 
                 gui.add(meshControls, 'positionX', -5, 5).onChange(() => updateMesh());
@@ -293,11 +332,13 @@
                 gui.add(meshControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateMesh());
                 gui.add(meshControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateMesh());
                 gui.add(meshControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateMesh());
-                gui.add(meshControls, 'scale', 0.1, 5).onChange(() => updateMesh());
+                gui.add(meshControls, 'scale', 0.001, 5).onChange(() => updateMesh());
+                gui.addColor(meshControls, 'color').onChange(() => updateMesh());
             }
 
             const loader = new THREE.OBJLoader();
             loader.load(url, (loadedObject) => {
+                console.log('Loaded object:', loadedObject);
                 if (object) {
                     scene.remove(object);
                 }
@@ -307,7 +348,15 @@
                 object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
                 scene.add(object);
 
-                camera.position.z = 2;
+                const material = new THREE.MeshStandardMaterial({ color: 0x0077ff, roughness: 0.5, metalness: 0.5 });
+
+                // Traverse through the loaded object and apply the material to each mesh
+                loadedObject.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = material; // Apply the new material
+                    }
+                });
+
                 adjustCameraForObject(object);
                 animate();
             }, undefined, (error) => {
@@ -320,6 +369,12 @@
                 object.position.set(meshControls.positionX, meshControls.positionY, meshControls.positionZ);
                 object.rotation.set(meshControls.rotationX, meshControls.rotationY, meshControls.rotationZ);
                 object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
+
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                            child.material.color.set(meshControls.color);
+                        }
+                    });    
             }
         }
 
@@ -328,23 +383,66 @@
             const size = box.getSize(new THREE.Vector3()).length();
             const center = box.getCenter(new THREE.Vector3());
 
-            camera.position.z = size * 1.5;
+            camera.position.set(center.x, center.y, center.z + size * 1.5);
             camera.lookAt(center);
         }
 
+        function addCube() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.set(1, 1, 0);
+            scene.add(cube);
+        }
 
         function animate() {
             requestAnimationFrame(animate);
+            controls.update(); 
             renderer.render(scene, camera);
         }
 
         downloadButton.addEventListener('click', () => {
-            if (objUrl) {
-                const link = document.createElement('a');
-                link.href = objUrl;
-                link.download = 'model.obj';
-                link.click();
+            const exporter = new THREE.OBJExporter();
+            const mergedScene = new THREE.Scene();
+
+            // Clone objects to avoid modifying the original scene
+            scene.children.forEach(child => {
+                if (child instanceof THREE.Mesh) {
+                    const clonedChild = child.clone();
+                    mergedScene.add(clonedChild);
+                }
+            });
+
+            // Also add the loaded object if it exists
+            if (object) {
+                const clonedObject = object.clone();
+                mergedScene.add(clonedObject);
             }
+
+            const objData = exporter.parse(mergedScene);
+            const blob = new Blob([objData], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'scene.obj';
+            link.click();
+        });
+
+
+        function handleGridItemClick(event) {
+            const itemId = event.target.getAttribute('data-id');
+            switch(itemId) {
+                case '1': addShape('cube'); break;
+                case '2': addShape('sphere'); break;
+                case '3': addShape('cone'); break;
+                case '4': addShape('cylinder'); break;
+                case '5': addShape('torus'); break;
+                case '6': addShape('pyramid'); break;
+            }
+        }
+
+        // Add click event listeners to grid items
+        document.querySelectorAll('.grid-item').forEach(item => {
+            item.addEventListener('click', handleGridItemClick);
         });
     </script>
 </body>
