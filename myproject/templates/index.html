@@ -209,34 +209,92 @@
         let objUrl = '';
         let scene, camera, renderer, object;
         let gui, meshControls;
-
+    
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
-
+    
+        let selectedObject = null;
+    
+        // New manipulation controls object
+        let manipulationControls = {
+            positionX: 0,
+            positionY: 0,
+            positionZ: 0,
+            rotationX: 0,
+            rotationY: 0,
+            rotationZ: 0,
+            scale: 1,
+            color: '#ffffff'
+        };
+    
         // Function to handle mouse click
         function onMouseClick(event) {
             // Convert mouse click position to normalized device coordinates
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+    
             // Update the raycaster with the camera and mouse position
             raycaster.setFromCamera(mouse, camera);
-
+    
             // Calculate objects intersecting the ray
             const intersects = raycaster.intersectObjects(scene.children);
-
             if (intersects.length > 0) {
                 // The first object intersected by the ray
                 const intersectedObject = intersects[0].object;
                 alert('You clicked on: ' + intersectedObject.userData.name);
-                // You can also change the material or perform other actions here
                 intersectedObject.material.color.set(0xff0000); // Change color to red on click
+                selectedObject = intersectedObject; // Set the selected object
+                updateGuiForSelectedObject(); // Update GUI with the selected object's properties
             }
         }
-
+    
+        function updateGuiForSelectedObject() {
+            if (selectedObject) {
+                // Update the meshControls based on the selected object's properties
+                meshControls.positionX = selectedObject.position.x;
+                meshControls.positionY = selectedObject.position.y;
+                meshControls.positionZ = selectedObject.position.z;
+                meshControls.rotationX = selectedObject.rotation.x;
+                meshControls.rotationY = selectedObject.rotation.y;
+                meshControls.rotationZ = selectedObject.rotation.z;
+                meshControls.scale = selectedObject.scale.x; // Assuming uniform scaling
+    
+                // Update the color control
+                if (selectedObject.material && selectedObject.material.color) {
+                    meshControls.color = `#${selectedObject.material.color.getHexString()}`;
+                }
+    
+                // Update GUI controls to reflect the current object properties
+                for (const key in meshControls) {
+                    if (gui.__controllers[key]) {
+                        gui.__controllers[key].updateDisplay();
+                    }
+                }
+    
+                // Update manipulation controls with the selected object's properties
+                manipulationControls.positionX = selectedObject.position.x;
+                manipulationControls.positionY = selectedObject.position.y;
+                manipulationControls.positionZ = selectedObject.position.z;
+                manipulationControls.rotationX = selectedObject.rotation.x;
+                manipulationControls.rotationY = selectedObject.rotation.y;
+                manipulationControls.rotationZ = selectedObject.rotation.z;
+                manipulationControls.scale = selectedObject.scale.x; // Assuming uniform scaling
+                if (selectedObject.material && selectedObject.material.color) {
+                    manipulationControls.color = `#${selectedObject.material.color.getHexString()}`;
+                }
+    
+                // Update manipulation controls display
+                for (const key in manipulationControls) {
+                    if (gui.__controllers[key]) {
+                        gui.__controllers[key].updateDisplay();
+                    }
+                }
+            }
+        }
+    
         // Add event listener for mouse clicks
         window.addEventListener('click', onMouseClick, false);
-
+    
         function addShape(type) {
             let geometry;
             switch(type) {
@@ -265,7 +323,7 @@
             scene.add(mesh);
             mesh.userData = { name: type };
         }
-
+    
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -280,12 +338,12 @@
             }
             return cookieValue;
         }
-
+    
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const formData = new FormData(form);
             const csrftoken = getCookie('csrftoken');
-
+    
             try {
                 const response = await fetch('/upload/', {
                     method: 'POST',
@@ -294,9 +352,9 @@
                     },
                     body: formData
                 });
-
+    
                 const data = await response.json();
-
+    
                 if (data.obj_url) {
                     objUrl = data.obj_url;
                     displayModel(objUrl);
@@ -308,7 +366,7 @@
                 console.error('Error uploading file:', error);
             }
         });
-
+    
         function displayModel(url) {
             if (!scene) {
                 scene = new THREE.Scene();
@@ -322,17 +380,17 @@
                 });
                 canvasContainer.innerHTML = '';
                 canvasContainer.appendChild(renderer.domElement);
-
+    
                 controls = new THREE.OrbitControls(camera, renderer.domElement);
                 controls.enableDamping = true; // Smooth motion
                 controls.dampingFactor = 0.25;
                 controls.minDistance = 1;
                 controls.maxDistance = 1000;
-
+    
                 const light = new THREE.DirectionalLight(0xffffff, 1);
                 light.position.set(0, 1, 1).normalize();
                 scene.add(light);
-
+    
                 gui = new dat.GUI();
                 gui.domElement.className += ' custom-class';
                 gui.domElement.style.margin = '10px';
@@ -340,9 +398,9 @@
                 gui.domElement.style.height = '100%';
                 gui.domElement.style.fontFamily = 'Arial, sans-serif';
                 gui.domElement.style.fontSize = '14px';
-                gui.domElement.style.color = '#000000'; // changed to black
-                gui.domElement.style.backgroundColor = 'transparent'; // changed to transparent
                 document.getElementById('gui-adjusts').appendChild(gui.domElement);
+    
+                // Existing mesh controls
                 meshControls = {
                     positionX: 0,
                     positionY: 0,
@@ -353,7 +411,7 @@
                     scale: 0.03,
                     color: '#ffffff'
                 };
-
+    
                 gui.add(meshControls, 'positionX', -5, 5).onChange(() => updateMesh());
                 gui.add(meshControls, 'positionY', -5, 5).onChange(() => updateMesh());
                 gui.add(meshControls, 'positionZ', -5, 5).onChange(() => updateMesh());
@@ -362,47 +420,55 @@
                 gui.add(meshControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateMesh());
                 gui.add(meshControls, 'scale', 0.001, 5).onChange(() => updateMesh());
                 gui.addColor(meshControls, 'color').onChange(() => updateMesh());
+    
+                // New manipulation controls
+                const manipulationFolder = gui.addFolder('Manipulation Controls');
+                manipulationFolder.add(manipulationControls, 'positionX', -5, 5).onChange(() => updateSelectedMesh());
+                manipulationFolder.add(manipulationControls, 'positionY', -5, 5).onChange(() => updateSelectedMesh());
+                manipulationFolder.add(manipulationControls, 'positionZ', -5, 5).onChange(() => updateSelectedMesh());
+                manipulationFolder.add(manipulationControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
+                manipulationFolder.add(manipulationControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
+                manipulationFolder.add(manipulationControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
+                manipulationFolder.add(manipulationControls, 'scale', 0.001, 5).onChange(() => updateSelectedMesh());
+                manipulationFolder.addColor(manipulationControls, 'color').onChange(() => updateSelectedMesh());
+                manipulationFolder.open();
+    
+                camera.position.z = 5;
             }
-
+    
             const loader = new THREE.OBJLoader();
             loader.load(url, (loadedObject) => {
-                console.log('Loaded object:', loadedObject);
-                if (object) {
-                    scene.remove(object);
-                }
                 object = loadedObject;
-                object.position.set(meshControls.positionX, meshControls.positionY, meshControls.positionZ);
-                object.rotation.set(meshControls.rotationX, meshControls.rotationY, meshControls.rotationZ);
-                object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
-                scene.add(object);
-
-                const material = new THREE.MeshStandardMaterial({ color: 0x0077ff, roughness: 0.5, metalness: 0.5 });
-
-                // Traverse through the loaded object and apply the material to each mesh
-                loadedObject.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material = material; // Apply the new material
+                object.traverse((child) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.material.color.set(0xffffff); // Set default color
+                        child.userData.name = '3D Model'; // Set a user-friendly name
                     }
                 });
-
-                adjustCameraForObject(object);
+                scene.add(object);
                 animate();
-            }, undefined, (error) => {
-                console.error('An error happened while loading the OBJ file:', error);
             });
         }
-
+    
         function updateMesh() {
             if (object) {
                 object.position.set(meshControls.positionX, meshControls.positionY, meshControls.positionZ);
                 object.rotation.set(meshControls.rotationX, meshControls.rotationY, meshControls.rotationZ);
                 object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
-
-                object.traverse((child) => {
-                    if (child.isMesh) {
-                            child.material.color.set(meshControls.color);
-                        }
-                    });    
+                if (object.material && object.material.color) {
+                    object.material.color.set(meshControls.color);
+                }
+            }
+        }
+    
+        function updateSelectedMesh() {
+            if (selectedObject) {
+                selectedObject.position.set(manipulationControls.positionX, manipulationControls.positionY, manipulationControls.positionZ);
+                selectedObject.rotation.set(manipulationControls.rotationX, manipulationControls.rotationY, manipulationControls.rotationZ);
+                selectedObject.scale.set(manipulationControls.scale, manipulationControls.scale, manipulationControls.scale);
+                if (selectedObject.material && selectedObject.material.color) {
+                    selectedObject.material.color.set(manipulationControls.color);
+                }
             }
         }
 
@@ -421,12 +487,6 @@
             const cube = new THREE.Mesh(geometry, material);
             cube.position.set(1, 1, 0);
             scene.add(cube);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update(); 
-            renderer.render(scene, camera);
         }
 
         downloadButton.addEventListener('click', () => {
@@ -473,6 +533,12 @@
             item.addEventListener('click', handleGridItemClick);
         });
         
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
     </script>
+    
 </body>
 </html>
