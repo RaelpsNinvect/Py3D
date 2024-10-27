@@ -8,14 +8,14 @@
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #058C42;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         nav {
-            background-color: #30363d;
+            background-color: #0D2818;
             width: 100%;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             align-items: center;
@@ -46,7 +46,7 @@
             transition: background-color 0.3s, border 0.3s;
         }
         nav ul li:hover a {
-            background-color: #606f80;
+            background-color: #16DB65;
             border-radius: 5px;
         }
         #section-one {
@@ -58,11 +58,11 @@
         #gui-adjusts {
             display: flex;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border: 1px rounded #ccc;
+            border: 1px solid #ccc; /* Corrected border syntax */
             background-color: white;
             margin: 0 20px;
-            height: flex;
-            border-radius: 10px;
+            height: flex; /* This property doesn't have an effect; consider removing it */
+            border-radius: 10px; /* Add this line for border radius */
             padding: 20px 0;
         }
         #container {
@@ -73,13 +73,13 @@
             margin: 20px 0;
         }
         #canvas-container {
-            width: 50%;
-            height: 420px;
-            border: 1px rounded #ccc;
-            background-color: white;
+            width: 65%;
+            height: 800px;
+            border: 1px solid #ccc; /* Corrected border syntax */
+            background-color: #C5C5C5;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-right: 20px;
-            border-radius: 10px;
+            border-radius: 10px; /* Add this line for border radius */
             padding: 10px;
         }
         canvas {
@@ -98,27 +98,27 @@
             align-items: center;
             justify-content: center;
             width: 80%;
-            background-color: #fff;
+            background-color: #04471C;
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin: 10px auto;
         }
-        form input[type="file"] {
+        .file-input-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 600px;
+            width: 20%;
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 1px 50px;
+            border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 10px auto;
+            margin: 10px;
         }
-        button {
-            background-color: #4a90e2;
-            color: white;
+
+        .file-label {
+            background-color: transparent;
+            color: black;
             border: none;
             padding: 10px 20px;
             cursor: pointer;
@@ -126,35 +126,66 @@
             border-radius: 5px;
             transition: background-color 0.3s;
         }
+
+        .file-input {
+            display: none;
+        }
+        button {
+            background-color: #16DB65;
+            color: white;
+            border: none;
+            padding: 10px 10px;
+            cursor: pointer;
+            font-weight: 700;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
         button:hover {
-            background-color: #357ab8;
+            background-color: #00ff66;
+        }
+        .button-container {
+            width: 10%; /* Make the button container full width */
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Center the button */
+            margin-top: 400px; /* Add space above the button */
+            margin-left: 20px;
+        }
+        #download-button {
+            padding: 10px 20px; /* Add padding for better appearance */
+            font-size: 16px; /* Adjust font size */
+            background-color: #16DB65; /* Button background color */
+            color: white; /* Text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Change cursor on hover */
         }
         #download-button {
             margin: 10px auto;
             display: none;
         }
         #grid-container {
-            width: 30%;
+            width: 15%;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr); /* Change to 2 columns */
+            grid-template-rows: repeat(3, 1fr); /* Optional: explicitly set 3 rows */
+            gap: 20px; /* Space between grid items */
             padding: 20px;
-            background-color: #fff;
-            border: 1px rounded #ccc;
-            box-shadow: 0 2px 10 px rgba(0, 0, 0, 0.1);
+            background-color: #04471C;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             height: 400px;
             overflow-y: auto;
             border-radius: 10px;
         }
         .grid-item {
             background-color: #eaeaea;
-            border: 1px rounded #ccc;
+            border: 1px solid #04471C; /* Corrected border syntax */
             height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
             color: #333;
+            border-radius: 5px; /* Add this line for border radius */
         }
     </style>
 </head>
@@ -165,7 +196,6 @@
             <li><a href="#home">Home</a></li>
             <li><a href="#services">Services</a></li>
             <li><a href="#about-us">About Us</a></li>
-            <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
     <div id="container">
@@ -173,12 +203,14 @@
             <div class="controls">
                 <form id="upload-form" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="file" id="image" name="image" accept="image/*">
+                    <div class="file-input-container">
+                        <label for="image" class="file-label">Choose Image</label>
+                        <input type="file" id="image" name="image" accept="image/*" class="file-input">
+                    </div>
                     <button type="submit">Upload Image</button>
                 </form>
             </div>
             <div id="gui-adjusts"></div>
-            <button id="download-button">Download OBJ</button>
         </section>
         
         <section id="canvas-container">
@@ -192,7 +224,10 @@
             <div class="grid-item" data-id="4">Cylinder</div>
             <div class="grid-item" data-id="5">Torus</div>
             <div class="grid-item" data-id="6">Pyramid</div>
-        </s>
+        </section>
+        <div class="button-container">
+            <button id="download-button">Download OBJ</button>
+        </div>
     </div>
   
 
