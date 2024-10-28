@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/7e4badb737.js" crossorigin="anonymous"></script>
+    <style>
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #058C42;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            background-color: #0D2818;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+        }
+        nav h1 {
+            color: white;
+            margin: 20px 40px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 20px;
+            margin-right: 20px;
+            display: flex;
+            float: right;
+        }
+        nav ul li {
+            margin-left: 20px;
+            position: relative;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: large;
+            padding: 10px 15px;
+            transition: background-color 0.3s, border 0.3s;
+        }
+        nav ul li:hover a {
+            background-color: #16DB65;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>3D Model Viewer</h1>
+        <ul>
+            <li><a href="{% url 'index' %}">
+                <i class="fa-solid fa-house" style="font-size: 20px;"></i>
+                Home</a></li>
+            <li><a href="{% url 'account' %}">
+                <i class="fa-solid fa-screwdriver-wrench" style="font-size: 20px;"></i>
+                Services</a></li>
+            <li><a href="{% url 'about' %}">
+                <i class="fa-solid fa-users" style="font-size: 20px;"></i>
+                About Us</a></li>
+        </ul>
+    </nav>
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

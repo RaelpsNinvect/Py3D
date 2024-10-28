@@ -82,6 +82,12 @@ def index(request):
     form = ImageUploadForm()
     return render(request, 'index.html', {'form': form})
 
+def account_view(request):
+    return render(request, 'account.html')
+
+def about_view(request):
+    return render(request, 'about.html')
+
 # Handle image upload and conversion
 def upload_image(request):
     if request.method == 'POST':
