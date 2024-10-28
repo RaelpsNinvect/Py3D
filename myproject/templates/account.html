@@ -1,5 +1,54 @@
 {% extends "basenav.html" %}
 
 {% block content %}
-<h1>Account</h1>
+<section id="account-info">
+    <h2 id="account-info-header" > Account Information </h2>
+    <form id="account-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Update Account</button>
+    </form>
+</section>
+{% endblock %}
+{% block script %}
+<style>
+.account-info h2 {
+    margin-top: 420px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
 {% endblock %}
