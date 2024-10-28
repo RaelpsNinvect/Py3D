@@ -239,6 +239,14 @@
         light.position.set(0, 1, 1).normalize();
         scene.add(light);
 
+        // Add the grid helper
+        const gridHelper = new THREE.GridHelper(90, 90); // size: 10, divisions: 10
+        gridHelper.renderOrder = Infinity; // Ensures the grid is rendered last
+        gridHelper.material.depthTest = false; // Optional: prevents depth issues if camera is close to grid
+        gridHelper.userData.ignoreRaycast = false;
+
+        scene.add(gridHelper);
+
         gui = new dat.GUI();
         gui.domElement.className += ' custom-class';
         gui.domElement.style.margin = '10px';
@@ -287,19 +295,28 @@
     const loader = new THREE.OBJLoader();
     loader.load(url, (loadedObject) => {
         object = loadedObject;
+        object.scale.set(0.03, 0.03, 0.03);
         object.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-                child.material.color.set(0xffffff); // Set default color
+                child.material.color.set(meshControls.color); // Set default color
                 child.userData.name = '3D Model'; // Set a user-friendly name
             }
         });
         scene.add(object);
+        adjustCameraForObject(object);
         animate();
     });
 }
+
     
         function updateMesh() {
             if (object) {
+                object.traverse((child) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.material.color.set(meshControls.color); // Update color from GUI
+                        child.material.needsUpdate = true; // Mark for update
+                    }
+                });
                 object.position.set(meshControls.positionX, meshControls.positionY, meshControls.positionZ);
                 object.rotation.set(meshControls.rotationX, meshControls.rotationY, meshControls.rotationZ);
                 object.scale.set(meshControls.scale, meshControls.scale, meshControls.scale);
