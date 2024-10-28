@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>3D Model Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/7e4badb737.js" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -53,17 +54,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 20%;
+            width: 19%;
         }
         #gui-adjusts {
             display: flex;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ccc; /* Corrected border syntax */
+            border: 1px solid #0e0909; /* Corrected border syntax */
             background-color: white;
-            margin: 0 20px;
+            margin: 10px 20px;
             height: flex; /* This property doesn't have an effect; consider removing it */
             border-radius: 10px; /* Add this line for border radius */
-            padding: 20px 0;
+            padding: 10px 0;
         }
         #container {
             display: flex;
@@ -73,19 +74,20 @@
             margin: 20px 0;
         }
         #canvas-container {
-            width: 65%;
-            height: 800px;
+            width: 55%;
+            height: 75vh;
+            display: flex;
+            align-items: center;
             border: 1px solid #ccc; /* Corrected border syntax */
             background-color: #C5C5C5;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-right: 20px;
-            border-radius: 10px; /* Add this line for border radius */
-            padding: 10px;
+            border-radius: 20px; /* Add this line for border radius */
         }
         canvas {
             display: block;
-            width: 100%;
-            height: 100%;
+            width: 90vw;
+            height: 100vh;
+            border-radius: 20px;
         }
         .controls {
             display: flex;
@@ -97,18 +99,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 80%;
             background-color: #04471C;
-            padding: 10px;
-            border-radius: 8px;
+            width: 65%;
+            padding: 5px 5px;
+            border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 10px auto;
+            margin: 1px auto;
         }
         .file-input-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 20%;
+            width: 15%;
             background-color: #fff;
             padding: 1px 50px;
             border-radius: 10px;
@@ -117,10 +119,12 @@
         }
 
         .file-label {
+            display: flex;
+            white-space: nowrap;
             background-color: transparent;
             color: black;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 10px;
             cursor: pointer;
             font-weight: 700;
             border-radius: 5px;
@@ -131,9 +135,12 @@
             display: none;
         }
         button {
+            display: flex;
+            flex-direction: row;
             background-color: #16DB65;
             color: white;
             border: none;
+            margin-right: 10px;
             padding: 10px 10px;
             cursor: pointer;
             font-weight: 700;
@@ -144,13 +151,15 @@
             background-color: #00ff66;
         }
         .button-container {
-            width: 10%; /* Make the button container full width */
-            display: flex; /* Use flexbox for alignment */
-            justify-content: center; /* Center the button */
-            margin-top: 400px; /* Add space above the button */
-            margin-left: 20px;
+            width: 20%; /* Make the button container full width */
+            display: flex;
+            align-items: center;
+            flex-direction: column; /* Use flexbox for alignment */
+            justify-content: center; /* Center the button *//* Add space above the button */
+            margin-left: 40px;
         }
         #download-button {
+            white-space: nowrap;
             padding: 10px 20px; /* Add padding for better appearance */
             font-size: 16px; /* Adjust font size */
             background-color: #16DB65; /* Button background color */
@@ -158,13 +167,11 @@
             border: none; /* Remove border */
             border-radius: 5px; /* Rounded corners */
             cursor: pointer; /* Change cursor on hover */
-        }
-        #download-button {
-            margin: 10px auto;
+            margin: 30px auto;
             display: none;
         }
         #grid-container {
-            width: 15%;
+            width: 100%;
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Change to 2 columns */
             grid-template-rows: repeat(3, 1fr); /* Optional: explicitly set 3 rows */
@@ -193,9 +200,15 @@
     <nav>
         <h1>3D Model Viewer</h1>
         <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#about-us">About Us</a></li>
+            <li><a href="#home">
+                <i class="fa-solid fa-house" style="font-size: 20px;"></i>
+                Home</a></li>
+            <li><a href="#services">
+                <i class="fa-solid fa-screwdriver-wrench" style="font-size: 20px;"></i>
+                Services</a></li>
+            <li><a href="#about-us">
+                <i class="fa-solid fa-users" style="font-size: 20px;"></i>
+                About Us</a></li>
         </ul>
     </nav>
     <div id="container">
@@ -207,7 +220,9 @@
                         <label for="image" class="file-label">Choose Image</label>
                         <input type="file" id="image" name="image" accept="image/*" class="file-input">
                     </div>
-                    <button type="submit">Upload Image</button>
+                    <button type="submit">
+                        <i class="fa-solid fa-upload" style="font-size: 20px;"></i>
+                    </button>
                 </form>
             </div>
             <div id="gui-adjusts"></div>
@@ -216,18 +231,21 @@
         <section id="canvas-container">
             <!-- Canvas will be inserted here by JavaScript -->
         </section>
-        <section id="grid-container">
+        
+        <section class="button-container">
+            <div id="grid-container">
             <!-- Sample grid items -->
-            <div class="grid-item" data-id="1">Cube</div>
-            <div class="grid-item" data-id="2">Sphere</div>
-            <div class="grid-item" data-id="3">Cone</div>
-            <div class="grid-item" data-id="4">Cylinder</div>
-            <div class="grid-item" data-id="5">Torus</div>
-            <div class="grid-item" data-id="6">Pyramid</div>
+                <div class="grid-item" data-id="1">Cube</div>
+                <div class="grid-item" data-id="2">Sphere</div>
+                <div class="grid-item" data-id="3">Cone</div>
+                <div class="grid-item" data-id="4">Cylinder</div>
+                <div class="grid-item" data-id="5">Torus</div>
+                <div class="grid-item" data-id="6">Pyramid</div>
+            </div>
+            <button id="download-button">
+                <i class="fa-solid fa-download" style="font-size: 20px;"></i>
+                Download OBJ</button>
         </section>
-        <div class="button-container">
-            <button id="download-button">Download OBJ</button>
-        </div>
     </div>
   
 
@@ -403,87 +421,92 @@
         });
     
         function displayModel(url) {
-            if (!scene) {
-                scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / 400, 0.1, 1000);
-                renderer = new THREE.WebGLRenderer({ alpha: true });
-                renderer.setSize(canvasContainer.clientWidth, 420);
-                window.addEventListener('resize', () => {
-                    camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
-                });
-                canvasContainer.innerHTML = '';
-                canvasContainer.appendChild(renderer.domElement);
-    
-                controls = new THREE.OrbitControls(camera, renderer.domElement);
-                controls.enableDamping = true; // Smooth motion
-                controls.dampingFactor = 0.25;
-                controls.minDistance = 1;
-                controls.maxDistance = 1000;
-    
-                const light = new THREE.DirectionalLight(0xffffff, 1);
-                light.position.set(0, 1, 1).normalize();
-                scene.add(light);
-    
-                gui = new dat.GUI();
-                gui.domElement.className += ' custom-class';
-                gui.domElement.style.margin = '10px';
-                gui.domElement.style.width = '200px';
-                gui.domElement.style.height = '100%';
-                gui.domElement.style.fontFamily = 'Arial, sans-serif';
-                gui.domElement.style.fontSize = '14px';
-                document.getElementById('gui-adjusts').appendChild(gui.domElement);
-    
-                // Existing mesh controls
-                meshControls = {
-                    positionX: 0,
-                    positionY: 0,
-                    positionZ: 0,
-                    rotationX: 0,
-                    rotationY: 0,
-                    rotationZ: 0,
-                    scale: 0.03,
-                    color: '#ffffff'
-                };
-    
-                gui.add(meshControls, 'positionX', -5, 5).onChange(() => updateMesh());
-                gui.add(meshControls, 'positionY', -5, 5).onChange(() => updateMesh());
-                gui.add(meshControls, 'positionZ', -5, 5).onChange(() => updateMesh());
-                gui.add(meshControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateMesh());
-                gui.add(meshControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateMesh());
-                gui.add(meshControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateMesh());
-                gui.add(meshControls, 'scale', 0.001, 5).onChange(() => updateMesh());
-                gui.addColor(meshControls, 'color').onChange(() => updateMesh());
-    
-                // New manipulation controls
-                const manipulationFolder = gui.addFolder('Manipulation Controls');
-                manipulationFolder.add(manipulationControls, 'positionX', -5, 5).onChange(() => updateSelectedMesh());
-                manipulationFolder.add(manipulationControls, 'positionY', -5, 5).onChange(() => updateSelectedMesh());
-                manipulationFolder.add(manipulationControls, 'positionZ', -5, 5).onChange(() => updateSelectedMesh());
-                manipulationFolder.add(manipulationControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
-                manipulationFolder.add(manipulationControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
-                manipulationFolder.add(manipulationControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
-                manipulationFolder.add(manipulationControls, 'scale', 0.001, 5).onChange(() => updateSelectedMesh());
-                manipulationFolder.addColor(manipulationControls, 'color').onChange(() => updateSelectedMesh());
-                manipulationFolder.open();
-    
-                camera.position.z = 5;
+    if (!scene) {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        
+        // Adjust the canvas on window resize
+        window.addEventListener('resize', () => {
+            const width = canvasContainer.clientWidth;
+            const height = canvasContainer.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+        
+        canvasContainer.innerHTML = '';
+        canvasContainer.appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; // Smooth motion
+        controls.dampingFactor = 0.25;
+        controls.minDistance = 1;
+        controls.maxDistance = 1000;
+
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(0, 1, 1).normalize();
+        scene.add(light);
+
+        gui = new dat.GUI();
+        gui.domElement.className += ' custom-class';
+        gui.domElement.style.margin = '10px';
+        gui.domElement.style.width = '200px';
+        gui.domElement.style.height = '100%';
+        gui.domElement.style.fontFamily = 'Arial, sans-serif';
+        gui.domElement.style.fontSize = '14px';
+        document.getElementById('gui-adjusts').appendChild(gui.domElement);
+
+        // Existing mesh controls
+        meshControls = {
+            positionX: 0,
+            positionY: 0,
+            positionZ: 0,
+            rotationX: 0,
+            rotationY: 0,
+            rotationZ: 0,
+            scale: 0.03,
+            color: '#ffffff'
+        };
+
+        gui.add(meshControls, 'positionX', -5, 5).onChange(() => updateMesh());
+        gui.add(meshControls, 'positionY', -5, 5).onChange(() => updateMesh());
+        gui.add(meshControls, 'positionZ', -5, 5).onChange(() => updateMesh());
+        gui.add(meshControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateMesh());
+        gui.add(meshControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateMesh());
+        gui.add(meshControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateMesh());
+        gui.add(meshControls, 'scale', 0.001, 5).onChange(() => updateMesh());
+        gui.addColor(meshControls, 'color').onChange(() => updateMesh());
+
+        // New manipulation controls
+        const manipulationFolder = gui.addFolder('Manipulation Controls');
+        manipulationFolder.add(manipulationControls, 'positionX', -5, 5).onChange(() => updateSelectedMesh());
+        manipulationFolder.add(manipulationControls, 'positionY', -5, 5).onChange(() => updateSelectedMesh());
+        manipulationFolder.add(manipulationControls, 'positionZ', -5, 5).onChange(() => updateSelectedMesh());
+        manipulationFolder.add(manipulationControls, 'rotationX', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
+        manipulationFolder.add(manipulationControls, 'rotationY', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
+        manipulationFolder.add(manipulationControls, 'rotationZ', 0, Math.PI * 2).onChange(() => updateSelectedMesh());
+        manipulationFolder.add(manipulationControls, 'scale', 0.001, 5).onChange(() => updateSelectedMesh());
+        manipulationFolder.addColor(manipulationControls, 'color').onChange(() => updateSelectedMesh());
+        manipulationFolder.open();
+
+        camera.position.z = 5;
+    }
+
+    const loader = new THREE.OBJLoader();
+    loader.load(url, (loadedObject) => {
+        object = loadedObject;
+        object.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.material.color.set(0xffffff); // Set default color
+                child.userData.name = '3D Model'; // Set a user-friendly name
             }
-    
-            const loader = new THREE.OBJLoader();
-            loader.load(url, (loadedObject) => {
-                object = loadedObject;
-                object.traverse((child) => {
-                    if (child instanceof THREE.Mesh) {
-                        child.material.color.set(0xffffff); // Set default color
-                        child.userData.name = '3D Model'; // Set a user-friendly name
-                    }
-                });
-                scene.add(object);
-                animate();
-            });
-        }
+        });
+        scene.add(object);
+        animate();
+    });
+}
     
         function updateMesh() {
             if (object) {
